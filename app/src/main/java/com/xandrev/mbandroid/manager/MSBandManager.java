@@ -11,7 +11,9 @@ import com.microsoft.band.BandInfo;
 import com.microsoft.band.ConnectionState;
 import com.microsoft.band.notifications.MessageFlags;
 import com.microsoft.band.tiles.BandTile;
+import com.microsoft.band.tiles.pages.PageData;
 import com.xandrev.mbandroid.tiles.CommonTile;
+import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.Date;
 import java.util.List;
@@ -48,8 +50,7 @@ public class MSBandManager {
 
     public void sendMessage(CommonTile tile,String title,String message) {
         try {
-            client.getNotificationManager().showDialog(tile.getId(), title, message);
-            client.getNotificationManager().sendMessage(tile.getId(), title, message, new Date(), MessageFlags.NONE);
+            client.getNotificationManager().sendMessage(tile.getId(), title, message, new Date(), MessageFlags.SHOW_DIALOG);
         } catch (BandIOException e) {
             e.printStackTrace();
         }
@@ -61,7 +62,7 @@ public class MSBandManager {
             if (devices.length == 0) {
                 return false;
             }
-            client = BandClientManager.getInstance().create(mainActivity, devices[0]);
+            client = BandClientManager.getInstance().create(mainActivity.getApplicationContext(), devices[0]);
         } else if (ConnectionState.CONNECTED == client.getConnectionState()) {
             return true;
         }
@@ -125,5 +126,15 @@ public class MSBandManager {
 
     public Activity getMainActivity(){
         return mainActivity;
+    }
+
+    public boolean addPage(CommonTile msTile) {
+        try {
+            client.getTileManager().setPages(msTile.getId(),msTile.getPage());
+            return true;
+        } catch (BandIOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

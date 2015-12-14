@@ -11,6 +11,7 @@ import android.util.Log;
 import com.microsoft.band.BandException;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
@@ -27,19 +28,24 @@ public class TilesManager {
     private MSBandManager bandManager;
     private static final String TAG = "TilesManager";
     private static TilesManager instance;
+    private Activity activity;
     private Context context;
     private boolean isRunning = false;
 
-    public static TilesManager getInstance(Context context) {
+    public static TilesManager getInstance(Context activity) {
         if(instance == null){
-            instance = new TilesManager(context);
+            instance = new TilesManager(activity);
         }
         return instance;
     }
 
-    public TilesManager(Context context){
+    public void setActivity(Activity activity){
+        this.activity = activity;
+    }
+
+    public TilesManager(Context ctx){
         tiles = new ArrayList<CommonTile>();
-        this.context = context;
+        this.context = ctx;
     }
 
     private boolean addTile(CommonTile tile) throws Exception {
@@ -75,19 +81,19 @@ public class TilesManager {
         return bandManager;
     }
 
-    public void start(Activity main){
+    public void start(mBandroid main){
         new appTask(main).execute();
     }
 
     private class appTask extends AsyncTask<Void, Void, Void> {
 
-        private Activity main;
+        private mBandroid main;
 
-        public appTask(Activity main){
+        public appTask(mBandroid main){
             this.main = main;
         }
 
-        public void setActivity(Activity act){
+        public void setActivity(mBandroid act){
             this.main = act;
         }
 
@@ -132,23 +138,38 @@ public class TilesManager {
             } catch (Exception e) {
                 Log.i(TAG, e.getMessage());
             }
+
+            main.updateBandStatus();
             return null;
         }
     }
 
     private List<CommonTile> getActivatedTiles() {
         List<CommonTile> out = new ArrayList<CommonTile>();
-        out.add(new NotificationTile(this));
+        out.add(NotificationTile.getInstance(this));
         return out;
     }
 
 
-    public void activate(){
+    public void activate() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(TileEvent.ACTION_TILE_OPENED);
         filter.addAction(TileEvent.ACTION_TILE_BUTTON_PRESSED);
         filter.addAction(TileEvent.ACTION_TILE_CLOSED);
-        context.registerReceiver(messageReceiver, filter);
+        try {
+            context.registerReceiver(messageReceiver, filter);
+
+        }catch(IllegalArgumentException ex){
+
+        }
+    }
+
+    public void deactivate(){
+        try {
+            context.unregisterReceiver(messageReceiver);
+        }catch(IllegalArgumentException ex){
+
+        }
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {

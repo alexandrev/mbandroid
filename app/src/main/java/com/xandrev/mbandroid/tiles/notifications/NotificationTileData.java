@@ -27,7 +27,6 @@ public class NotificationTileData {
     private final UUID id;
     private final UUID pageId;
     private final String title;
-    private final List<String> topics;
     private final Context context;
 
     public NotificationTileData(Context context){
@@ -35,8 +34,6 @@ public class NotificationTileData {
         id = UUID.fromString("a14f3e6c-a03c-11e5-8994-feff819cdc9f");
         pageId = UUID.fromString("de391572-a047-11e5-8994-feff819cdc9f");
         title = "Notifications";
-        topics = new ArrayList<>();
-        topics.add("ALL");
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -59,10 +56,6 @@ public Bitmap getTileIconSmall() {
 
     public String getTitle() {
         return title;
-    }
-
-    public List<String> getTopics() {
-        return topics;
     }
 
     public Context getContext() {
