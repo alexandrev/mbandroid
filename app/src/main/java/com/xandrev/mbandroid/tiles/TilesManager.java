@@ -13,6 +13,7 @@ import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
+import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
@@ -147,6 +148,7 @@ public class TilesManager {
     private List<CommonTile> getActivatedTiles() {
         List<CommonTile> out = new ArrayList<CommonTile>();
         out.add(NotificationTile.getInstance(this));
+        out.add(MailTile.getInstance(this));
         return out;
     }
 

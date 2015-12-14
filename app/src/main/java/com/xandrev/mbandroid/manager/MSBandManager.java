@@ -12,6 +12,7 @@ import com.microsoft.band.ConnectionState;
 import com.microsoft.band.notifications.MessageFlags;
 import com.microsoft.band.tiles.BandTile;
 import com.microsoft.band.tiles.pages.PageData;
+import com.microsoft.band.tiles.pages.PageLayout;
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
@@ -133,6 +134,8 @@ public class MSBandManager {
             client.getTileManager().setPages(msTile.getId(),msTile.getPage());
             return true;
         } catch (BandIOException e) {
+            e.printStackTrace();
+        } catch (BandException e) {
             e.printStackTrace();
         }
         return false;

@@ -11,6 +11,7 @@ import com.microsoft.band.tiles.pages.PageData;
 import com.microsoft.band.tiles.pages.PageLayout;
 import com.xandrev.mbandroid.R;
 import com.xandrev.mbandroid.manager.MSBandManager;
+import com.xandrev.mbandroid.settings.mail.MailSettings;
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.TilesManager;
 import com.xandrev.mbandroid.utils.Util;
@@ -28,17 +29,28 @@ public class MailTile implements CommonTile {
     private final String title;
     private final Context context;
     private TilesManager manager;
+    private MailSettings settings;
+
+    private static MailTile instance;
+
+    public static final MailTile getInstance(TilesManager manager){
+        if(instance == null){
+            instance = new MailTile(manager);
+        }
+        return instance;
+    }
 
     public MailTile(TilesManager manager){
         this.manager = manager;
         this.context = manager.getContext();
+        settings = MailSettings.getInstance(context);
         id = UUID.fromString("a14f3e6c-a03c-11e5-8994-feff819cdc9e");
         title = "Mail";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        tileIcon = BitmapFactory.decodeResource(context.getResources(), R.raw.notification_center_icon, options);
-        tileIconSmall = BitmapFactory.decodeResource(context.getResources(), R.raw.notification_center_icon_small, options);
+        tileIcon = BitmapFactory.decodeResource(context.getResources(), R.raw.mail_center_icon, options);
+        tileIconSmall = BitmapFactory.decodeResource(context.getResources(), R.raw.mail_center_icon_small, options);
     }
 
     @Override
@@ -101,7 +113,7 @@ public class MailTile implements CommonTile {
 
     @Override
     public boolean isAffected(String pack) {
-        return false;
+        return settings.getEnabledApps().contains(pack);
     }
 
     @Override
