@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
@@ -12,8 +14,12 @@ import android.util.Log;
 
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.microsoft.band.tiles.pages.FlowPanel;
+import com.microsoft.band.tiles.pages.FlowPanelOrientation;
 import com.microsoft.band.tiles.pages.PageData;
 import com.microsoft.band.tiles.pages.PageLayout;
+import com.microsoft.band.tiles.pages.TextButton;
+import com.microsoft.band.tiles.pages.TextButtonData;
 import com.xandrev.mbandroid.R;
 import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
@@ -34,7 +40,11 @@ public class NotificationTile implements CommonTile {
 
     private static final String TAG = "NotificaitonTile";
 
-    private NotificationTileData data;
+    private final Bitmap tileIconSmall;
+    private final Bitmap tileIcon;
+    private final UUID id;
+    private final UUID pageId;
+    private final String title;
 
     private Context context;
 
@@ -59,35 +69,42 @@ public class NotificationTile implements CommonTile {
     public NotificationTile( TilesManager manager){
         this.manager = manager;
         this.context = manager.getContext();
-        data = new NotificationTileData(context);
         notificationsArrived = new ArrayList<>();
         settings = NotificationSettings.getInstance(context);
+        id = UUID.fromString("a14f3e6c-a03c-11e5-8994-feff819cdc9f");
+        pageId = UUID.fromString("de391572-a047-11e5-8994-feff819cdc9f");
+        title = "Notifications+";
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        tileIcon = BitmapFactory.decodeResource(context.getResources(), R.raw.notification_center_icon, options);
+        tileIconSmall = BitmapFactory.decodeResource(context.getResources(), R.raw.notification_center_icon_small, options);
 
     }
 
     @Override
     public PageData updatePages() {
-       return data.getPages();
+       return getPages();
     }
 
     @Override
     public UUID getId() {
-        return data.getId();
+        return id;
     }
 
     @Override
     public String getName() {
-        return data.getTitle();
+        return title;
     }
 
     @Override
     public Bitmap getIcon() {
-        return data.getTileIcon();
+        return tileIcon;
     }
 
     @Override
     public Bitmap getSmallIcon() {
-        return data.getTileIconSmall();
+        return tileIconSmall;
     }
 
     @Override
@@ -99,20 +116,24 @@ public class NotificationTile implements CommonTile {
         if (extras != null) {
 
             String title = extras.getString("android.title");
-            String text = extras.getCharSequence("android.text").toString();
-            boolean bigText = false;
-            if (extras.getCharSequence("android.bigText") != null) {
-                text = extras.getCharSequence("android.bigText").toString();
-                bigText = true;
-            }
+            CharSequence notifText = extras.getCharSequence("android.text");
+            if(notifText != null) {
+                String text = notifText.toString();
+                boolean bigText = false;
+                notifText = extras.getCharSequence("android.bigText");
+                if (notifText != null) {
+                    text = notifText.toString();
+                    bigText = true;
+                }
 
-            if (!avoidSendMessage(text, bigText)) {
-                MSBandManager client = manager.getBand();
-                if (client != null && client.isConnected()) {
-                    client.sendMessage(this, title, text);
-                    notificationsArrived.add(sbn.getKey());
-                    Log.d(TAG,"notification size: "+notificationsArrived.size());
-                    client.addPage(this);
+                if (!avoidSendMessage(text, bigText)) {
+                    MSBandManager client = manager.getBand();
+                    if (client != null && client.isConnected()) {
+                        client.sendMessage(this, title, text);
+                        notificationsArrived.add(sbn.getKey());
+                        Log.d(TAG, "notification size: " + notificationsArrived.size());
+                        client.addPage(this);
+                    }
                 }
             }
         }
@@ -125,19 +146,34 @@ public class NotificationTile implements CommonTile {
 
     @Override
     public PageData getPage() {
-        return data.getPages();
+        return getPages();
     }
 
-    @Override
     public PageLayout getPageLayout() {
-        return data.getPageLayout();
+        return new PageLayout(
+                new FlowPanel(15, 0, 260, 105, FlowPanelOrientation.VERTICAL)
+                        .addElements(new TextButton(0, 0, 210, 45).setMargins(0, 5, 0, 0).setId(21))
+                        .addElements(new TextButton(0, 50, 210, 45).setMargins(0, 5, 0, 0).setId(22))
+        );
+    }
+
+    public PageData getPages() {
+        return new PageData(pageId, 0)
+                .update(new TextButtonData(21, "Dismiss Notifs."))
+                .update(new TextButtonData(22, "Clear Pages"));
+
     }
 
     @Override
     public void manageAction(Intent intent) {
         if (intent.getAction() == TileEvent.ACTION_TILE_BUTTON_PRESSED) {
             TileButtonEvent buttonData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
-            clearNotifications();
+            Log.i(TAG,""+buttonData.getElementID());
+            if(buttonData.getElementID() == 21) {
+                clearNotifications();
+            }else if(buttonData.getElementID() == 22){
+                manager.getBand().clearPages(this);
+            }
         }
     }
 

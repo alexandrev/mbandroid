@@ -6,8 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.xandrev.mbandroid.settings.Settings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +15,7 @@ import java.util.Map;
 /**
  * Created by alexa on 13/12/2015.
  */
-public class NotificationSettings extends Settings {
+public class NotificationSettings {
 
     private SharedPreferences shared;
     private Map<String,String> packageAppMap;

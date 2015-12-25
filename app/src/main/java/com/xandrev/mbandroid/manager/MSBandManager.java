@@ -93,15 +93,55 @@ public class MSBandManager {
                     return null;
                 }
             }
-            return new BandTile.Builder(tile.getId(), tile.getName(), tile.getIcon())
-                    .setTileSmallIcon(tile.getSmallIcon(), true)
-                    .setPageLayouts(tile.getPageLayout())
-                    .build();
+            BandTile.Builder builder = new BandTile.Builder(tile.getId(), tile.getName(), tile.getIcon());
+            builder.setTileSmallIcon(tile.getSmallIcon(), true);
+            if(tile.getPageLayout() != null) {
+                builder.setPageLayouts(tile.getPageLayout());
+            }
+            return builder.build();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (BandException e) {
                 e.printStackTrace();
             }
+        return null;
+    }
+
+    public boolean clearPages(CommonTile tile){
+        boolean out = false;
+        Log.i(TAG, "Clearing pages from tile ...\n");
+        if(tile != null) {
+            try {
+                out =  client.getTileManager().removePages(tile.getId()).await();
+                out = client.getTileManager().setPages(tile.getId(),tile.getPage()).await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (BandException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i(TAG, "Pages cleared: "+out);
+        return out;
+    }
+
+    public BandTile getCommonTileFromUUID(UUID tileID) {
+        if(tileID != null) {
+            Log.i(TAG,"Searching tile from UUID: "+tileID);
+            List<BandTile> tiles = null;
+            try {
+                tiles = client.getTileManager().getTiles().await();
+                Log.i(TAG,"Tile List:"+tiles.size());
+                for (BandTile tile : tiles) {
+                    if (tileID.equals(tile.getTileId())) {
+                        return tile;
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (BandException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
@@ -130,14 +170,17 @@ public class MSBandManager {
     }
 
     public boolean addPage(CommonTile msTile) {
-        try {
-            client.getTileManager().setPages(msTile.getId(),msTile.getPage());
+
+            Log.i(TAG,"Removing the page from the tile");
+            BandTile uid = getCommonTileFromUUID(msTile.getId());
+            if(uid != null){
+                Log.i(TAG,"Size:  the page to the tile" + uid.getPageLayouts().size());
+            }
+//            boolean result = client.getTileManager().removePages(msTile.getPage().getPageId()).await();
+    //        Log.i(TAG,"Removed the page from the tile: "+result);
+            Log.i(TAG,"Adding the page to the tile");
+  //          result = client.getTileManager().setPages(msTile.getId(),msTile.getPage()).await();
+      //      Log.i(TAG,"Added the page to the tile: "+result);
             return true;
-        } catch (BandIOException e) {
-            e.printStackTrace();
-        } catch (BandException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }

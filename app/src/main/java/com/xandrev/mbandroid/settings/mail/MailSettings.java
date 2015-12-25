@@ -6,8 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.xandrev.mbandroid.settings.Settings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +15,7 @@ import java.util.Map;
 /**
  * Created by alexa on 13/12/2015.
  */
-public class MailSettings extends Settings {
+public class MailSettings {
 
     private SharedPreferences shared;
     private Map<String,String> packageAppMap;
@@ -62,6 +60,7 @@ public class MailSettings extends Settings {
         for (ApplicationInfo packageInfo : packages) {
             String app = packageInfo.loadLabel(pm).toString();
             if(app != null && isMailApp(app)) {
+                Log.i(TAG,"Added application: "+app + " / " + packageInfo.packageName);
                 out.add(app);
                 packageAppMap.put(app, packageInfo.packageName);
                 appMap.put(packageInfo.packageName, app);
@@ -100,11 +99,27 @@ public class MailSettings extends Settings {
     }
 
     public boolean isEnabledApplication(String value) {
+        init();
         Log.d(TAG,"Recovered value:"+value);
         String transformedValue = packageAppMap.get(value);
         Log.d(TAG,"Transformed value: "+transformedValue);
         List list = getEnabledApps();
         return list.contains(transformedValue);
+    }
+
+    public boolean isEnabledPackage(String value) {
+        init();
+        Log.d(TAG,"Recovered value:"+value);
+        String transformedValue = appMap.get(value);
+        Log.d(TAG,"Transformed value: "+transformedValue);
+        List list = getEnabledApps();
+        return list.contains(transformedValue);
+    }
+
+    private void init() {
+        if(packageAppMap == null){
+            getInstalledMailApps();
+        }
     }
 
     public void setEnabledApps(List<String> newEnabledAppList) {

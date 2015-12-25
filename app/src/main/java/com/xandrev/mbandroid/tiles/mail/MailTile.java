@@ -44,8 +44,8 @@ public class MailTile implements CommonTile {
         this.manager = manager;
         this.context = manager.getContext();
         settings = MailSettings.getInstance(context);
-        id = UUID.fromString("a14f3e6c-a03c-11e5-8994-feff819cdc9e");
-        title = "Mail";
+        id = UUID.fromString("b14f3e6c-a03c-11e5-8994-feff819cdc9e");
+        title = "Mail+";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -85,17 +85,19 @@ public class MailTile implements CommonTile {
         if (extras != null) {
 
             String title = extras.getString("android.title");
-            String text = extras.getCharSequence("android.text").toString();
-            boolean bigText = false;
-            if (extras.getCharSequence("android.bigText") != null) {
-                text = extras.getCharSequence("android.bigText").toString();
-                bigText = true;
-            }
+            if(extras.getCharSequence("android.text") != null) {
+                String text = extras.getCharSequence("android.text").toString();
+                boolean bigText = false;
+                if (extras.getCharSequence("android.bigText") != null) {
+                    text = extras.getCharSequence("android.bigText").toString();
+                    bigText = true;
+                }
 
-            if (!avoidSendMessage(text, bigText)) {
-                MSBandManager client = manager.getBand();
-                if (client != null && client.isConnected()) {
-                    client.sendMessage(this, title, text);
+                if (!avoidSendMessage(text, bigText)) {
+                    MSBandManager client = manager.getBand();
+                    if (client != null && client.isConnected()) {
+                        client.sendMessage(this, title, text);
+                    }
                 }
             }
         }
@@ -113,7 +115,7 @@ public class MailTile implements CommonTile {
 
     @Override
     public boolean isAffected(String pack) {
-        return settings.getEnabledApps().contains(pack);
+        return settings.isEnabledPackage(pack);
     }
 
     @Override

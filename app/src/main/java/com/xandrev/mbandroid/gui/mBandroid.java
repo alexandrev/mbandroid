@@ -48,6 +48,10 @@ public class mBandroid extends Activity {
         manager.setActivity(this);
         btnStart = (Button) findViewById(R.id.btnStart);
         statusView = (TextView) findViewById(R.id.textView2);
+        if(manager != null) {
+            manager.activate();
+            manager.start(act);
+        }
         updateBandStatus();
 
         findViewById(R.id.notificationsBtn).setOnClickListener(new OnClickListener() {
@@ -69,8 +73,13 @@ public class mBandroid extends Activity {
         btnStart.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                manager.start(act);
+                if(btnStart.getText().equals("Start")) {
+                    manager.start(act);
+                }else{
+                    manager.stop();
+                }
                 updateBandStatus();
+
             }
         });
     }
@@ -81,6 +90,7 @@ public class mBandroid extends Activity {
         super.onResume();
         if(manager != null) {
             manager.activate();
+            manager.start(act);
         }
         updateBandStatus();
         Log.d(TAG,"onResume operation completed");
@@ -113,9 +123,11 @@ public class mBandroid extends Activity {
                 Log.d(TAG,"Band is connected: "+connected);
                 if(connected){
                     statusView.setText("Connected");
+                    btnStart.setText("Stop");
                 }
                 else{
                     statusView.setText("Disconnected");
+                    btnStart.setText("Start");
                 }
                 Log.d(TAG,"Completed run method to update the band state in the GUI");
             }

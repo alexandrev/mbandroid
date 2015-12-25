@@ -39,6 +39,9 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <service
+            android:name=".BandStatusService"
+            android:exported="true"/>
 
         <activity
             android:name=".gui.NotificationSettings"

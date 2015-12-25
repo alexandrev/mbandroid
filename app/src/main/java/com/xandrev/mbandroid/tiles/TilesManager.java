@@ -13,6 +13,7 @@ import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
+import com.xandrev.mbandroid.settings.base.GeneralSettings;
 import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
@@ -32,6 +33,7 @@ public class TilesManager {
     private Activity activity;
     private Context context;
     private boolean isRunning = false;
+    private GeneralSettings settings;
 
     public static TilesManager getInstance(Context activity) {
         if(instance == null){
@@ -47,6 +49,7 @@ public class TilesManager {
     public TilesManager(Context ctx){
         tiles = new ArrayList<CommonTile>();
         this.context = ctx;
+        settings = GeneralSettings.getInstance(ctx);
     }
 
     private boolean addTile(CommonTile tile) throws Exception {
@@ -54,6 +57,7 @@ public class TilesManager {
         if (tiles != null && !tiles.contains(tile)) {
             out = bandManager.addTile(tile);
             tiles.add(tile);
+            Log.i(TAG,"Tile added to the logical list: "+tile.getName());
         }
         return out;
     }
@@ -86,6 +90,10 @@ public class TilesManager {
         new appTask(main).execute();
     }
 
+    public void stop() {
+        bandManager.disconnect();
+    }
+
     private class appTask extends AsyncTask<Void, Void, Void> {
 
         private mBandroid main;
@@ -109,8 +117,12 @@ public class TilesManager {
                 if(bandManager.isConnected()){
                         Log.i(TAG, "Band is connected.\n");
                         List<CommonTile> tiles = getActivatedTiles();
-                        for (CommonTile tile : tiles) {
-                            addTile(tile);
+                        if(tiles != null) {
+                            Log.i(TAG,"Activated Tiles Size: "+tiles.size());
+                            for (CommonTile tile : tiles) {
+                                Log.i(TAG, "Common Tile Added: " + tile.getName());
+                                addTile(tile);
+                            }
                         }
                     } else {
                         Log.i(TAG, "Band isn't connected. Please make sure bluetooth is on and the band is in range.\n");
@@ -147,8 +159,15 @@ public class TilesManager {
 
     private List<CommonTile> getActivatedTiles() {
         List<CommonTile> out = new ArrayList<CommonTile>();
-        out.add(NotificationTile.getInstance(this));
-        out.add(MailTile.getInstance(this));
+        List<String> tilesEnabled = settings.getEnabledTiles();
+        if(tilesEnabled != null){
+            for(int i=0;i<tilesEnabled.size();i++) {
+                CommonTile tileObj = settings.getClassFromTile(this,tilesEnabled.get(i));
+                if(tileObj != null){
+                    out.add(tileObj);
+                }
+            }
+        }
         return out;
     }
 
