@@ -27,6 +27,7 @@ import java.util.UUID;
 public class TilesManager {
 
     private List<CommonTile> tiles;
+    private List<UUID> internalTilesUUID;
     private MSBandManager bandManager;
     private static final String TAG = "TilesManager";
     private static TilesManager instance;
@@ -48,13 +49,14 @@ public class TilesManager {
 
     public TilesManager(Context ctx){
         tiles = new ArrayList<CommonTile>();
+        internalTilesUUID = new ArrayList<>();
         this.context = ctx;
         settings = GeneralSettings.getInstance(ctx);
     }
 
     private boolean addTile(CommonTile tile) throws Exception {
         boolean out = false;
-        if (tiles != null && !tiles.contains(tile)) {
+        if (tile != null && bandManager.getCommonTileFromUUID(tile.getId()) == null)  {
             out = bandManager.addTile(tile);
             tiles.add(tile);
             Log.i(TAG,"Tile added to the logical list: "+tile.getName());
