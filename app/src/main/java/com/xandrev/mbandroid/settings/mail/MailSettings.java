@@ -133,6 +133,7 @@ public class MailSettings {
     }
 
     public void setEnabledTile(boolean checked) {
+        Log.d(TAG,"Tile Activated: "+checked);
         shared.edit().putBoolean("enabled",checked).apply();
     }
 

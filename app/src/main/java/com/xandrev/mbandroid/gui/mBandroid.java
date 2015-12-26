@@ -27,18 +27,25 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.xandrev.mbandroid.R;
 import com.xandrev.mbandroid.tiles.TilesManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class mBandroid extends Activity {
 
     private Button btnStart;
+    private ImageButton btnMail;
+    private ImageButton btnNotifications;
 	private TilesManager manager;
 	private final mBandroid act = this;
     private static final String TAG = "mBandroid";
     private TextView statusView;
+    private TextView logView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +55,19 @@ public class mBandroid extends Activity {
         manager.setActivity(this);
         btnStart = (Button) findViewById(R.id.btnStart);
         statusView = (TextView) findViewById(R.id.textView2);
+        logView = (TextView) findViewById(R.id.textView4);
+        btnNotifications = (ImageButton) findViewById(R.id.notificationsBtn);
+        btnMail = (ImageButton) findViewById(R.id.emailBtn);
+
+
         if(manager != null) {
             manager.activate();
             manager.start(act);
         }
         updateBandStatus();
 
-        findViewById(R.id.notificationsBtn).setOnClickListener(new OnClickListener() {
+
+        btnNotifications.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mBandroid.this, NotificationSettings.class);
@@ -98,7 +111,6 @@ public class mBandroid extends Activity {
 	
 	@Override
 	protected void onPause() {
-
 		super.onPause();
 	}
 
@@ -108,6 +120,21 @@ public class mBandroid extends Activity {
         if(manager != null) {
             manager.deactivate();
         }
+    }
+
+    public void addMessage(final String msg){
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Starting run method to update the log viewer in the GUI");
+                String txt = logView.getText().toString();
+                if(msg != null){
+                    txt+="["+new SimpleDateFormat("HH:MM:ss").format(new Date())+"] - "+msg+"\n";
+                }
+                logView.setText(txt);
+                Log.d(TAG, "Completed run method to update the log viewer in the GUI");
+            }
+        });
     }
 
     public void updateBandStatus(){

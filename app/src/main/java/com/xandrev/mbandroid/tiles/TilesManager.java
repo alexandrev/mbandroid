@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -13,13 +14,17 @@ import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
+import com.xandrev.mbandroid.notifications.BandStatusService;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
+import com.xandrev.mbandroid.settings.notifications.NotificationSettings;
 import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by alexa on 12/11/2015.
@@ -31,7 +36,7 @@ public class TilesManager {
     private MSBandManager bandManager;
     private static final String TAG = "TilesManager";
     private static TilesManager instance;
-    private Activity activity;
+    private mBandroid activity;
     private Context context;
     private boolean isRunning = false;
     private GeneralSettings settings;
@@ -43,7 +48,7 @@ public class TilesManager {
         return instance;
     }
 
-    public void setActivity(Activity activity){
+    public void setActivity(mBandroid activity){
         this.activity = activity;
     }
 
@@ -52,6 +57,12 @@ public class TilesManager {
         internalTilesUUID = new ArrayList<>();
         this.context = ctx;
         settings = GeneralSettings.getInstance(ctx);
+        initTiles();
+    }
+
+    private void initTiles() {
+        MailTile.getInstance(this);
+        NotificationTile.getInstance(this);
     }
 
     private boolean addTile(CommonTile tile) throws Exception {
@@ -60,6 +71,7 @@ public class TilesManager {
             out = bandManager.addTile(tile);
             tiles.add(tile);
             Log.i(TAG,"Tile added to the logical list: "+tile.getName());
+            activity.addMessage("Tile added to the logical list: "+tile.getName());
         }
         return out;
     }
@@ -89,7 +101,9 @@ public class TilesManager {
     }
 
     public void start(mBandroid main){
+
         new appTask(main).execute();
+
     }
 
     public void stop() {
@@ -108,6 +122,7 @@ public class TilesManager {
             this.main = act;
         }
 
+
         @Override
         protected Void doInBackground(Void... params) {
             try {
@@ -117,6 +132,10 @@ public class TilesManager {
                 }
 
                 if(bandManager.isConnected()){
+                    Intent serviceIntent = new Intent(context,BandStatusService.class);
+                    EventBus.getDefault().postSticky(bandManager);
+                    serviceIntent.putExtra("command", "start");
+                    context.startService(serviceIntent);
                         Log.i(TAG, "Band is connected.\n");
                         List<CommonTile> tiles = getActivatedTiles();
                         if(tiles != null) {

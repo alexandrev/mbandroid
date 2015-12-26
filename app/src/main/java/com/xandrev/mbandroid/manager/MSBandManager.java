@@ -1,6 +1,8 @@
 package com.xandrev.mbandroid.manager;
 
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.microsoft.band.BandClient;
@@ -13,9 +15,11 @@ import com.microsoft.band.notifications.MessageFlags;
 import com.microsoft.band.tiles.BandTile;
 import com.microsoft.band.tiles.pages.PageData;
 import com.microsoft.band.tiles.pages.PageLayout;
+import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -23,14 +27,14 @@ import java.util.UUID;
 /**
  * Created by alexa on 12/11/2015.
  */
-public class MSBandManager {
+public class MSBandManager implements Parcelable {
 
     private static final String TAG = "MSBandManager";
-    private Activity mainActivity = null;
+    private mBandroid mainActivity = null;
     private BandClient client = null;
     private static MSBandManager instance;
 
-    public MSBandManager(Activity activity) {
+    public MSBandManager(mBandroid activity) {
         mainActivity = activity;
         Log.d(TAG,mainActivity.getLocalClassName());
         try {
@@ -42,7 +46,23 @@ public class MSBandManager {
         }
     }
 
-    public static final MSBandManager getInstance(Activity activity){
+    protected MSBandManager(Parcel in) {
+
+    }
+
+    public static final Creator<MSBandManager> CREATOR = new Creator<MSBandManager>() {
+        @Override
+        public MSBandManager createFromParcel(Parcel in) {
+            return new MSBandManager(in);
+        }
+
+        @Override
+        public MSBandManager[] newArray(int size) {
+            return new MSBandManager[size];
+        }
+    };
+
+    public static final MSBandManager getInstance(mBandroid activity){
         if(instance == null){
             instance = new MSBandManager(activity);
         }
@@ -63,17 +83,21 @@ public class MSBandManager {
             if (devices.length == 0) {
                 return false;
             }
+            Log.i(TAG,"Main Activity: "+mainActivity);
             client = BandClientManager.getInstance().create(mainActivity.getApplicationContext(), devices[0]);
         } else if (ConnectionState.CONNECTED == client.getConnectionState()) {
             return true;
         }
-        return ConnectionState.CONNECTED == client.connect().await();
+        boolean out = ConnectionState.CONNECTED == client.connect().await();
+        mainActivity.addMessage("Band connected: "+out);
+        return out;
     }
 
     public void disconnect(){
         if (client != null) {
             try {
                 client.disconnect().await();
+                mainActivity.addMessage("Band disconected");
             } catch (InterruptedException e) {
                 // Do nothing as this is happening during destroy
             } catch (BandException e) {
@@ -182,5 +206,14 @@ public class MSBandManager {
   //          result = client.getTileManager().setPages(msTile.getId(),msTile.getPage()).await();
       //      Log.i(TAG,"Added the page to the tile: "+result);
             return true;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
     }
 }

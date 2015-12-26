@@ -82,7 +82,7 @@ public class NotificationManager extends NotificationListenerService {
         if(sbn != null){
             String packageName = sbn.getPackageName();
             if(packageName != null && !"".equals(packageName)){
-                out = "com.microsoft.band.sdk.sampleapp.tileevent".equals(packageName);
+                out = "com.xandrev.mbandroid".equals(packageName);
             }
         }
         return out;

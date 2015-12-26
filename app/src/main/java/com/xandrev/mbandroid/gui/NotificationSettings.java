@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
@@ -24,6 +25,8 @@ public class NotificationSettings extends Activity {
 
     private static final String TAG = "NotificationSettings";
     private com.xandrev.mbandroid.settings.notifications.NotificationSettings settings;
+    private Button btnCheckAll;
+    private Button btnUncheckAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +35,13 @@ public class NotificationSettings extends Activity {
         setContentView(R.layout.activity_notification_settings);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        btnCheckAll = (Button) findViewById(R.id.btnCheckAll);
+        btnUncheckAll = (Button) findViewById(R.id.btnUncheckAll);
+
 
         final ListView lv = (ListView) findViewById(R.id.listView);
         final List<String> your_array_list =settings.getApplicationNames();
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, your_array_list );
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, your_array_list );
         Log.i(TAG, "Recovering application list: " + your_array_list.size());
         lv.setAdapter(arrayAdapter);
         lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -54,6 +60,25 @@ public class NotificationSettings extends Activity {
                 lv.setItemChecked(i, true);
             }
         }
+
+        btnCheckAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < arrayAdapter.getCount(); i++) {
+                    lv.setItemChecked(i, true);
+                }
+            }
+        });
+
+        btnUncheckAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < arrayAdapter.getCount(); i++) {
+                    lv.setItemChecked(i, false);
+                }
+            }
+        });
+
 
         cbox.setChecked(settings.getEnabledTile());
 

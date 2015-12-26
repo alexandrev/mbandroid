@@ -2,6 +2,7 @@ package com.xandrev.mbandroid.settings.base;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.TilesManager;
@@ -42,19 +43,29 @@ public class GeneralSettings {
 
 
     public List<String> getEnabledTiles(){
+        Log.d(TAG,"Starting to get the enabled tiles");
         String tiles = shared.getString("tiles","");
+        Log.d(TAG,"Tiles: "+tiles);
         ArrayList<String> out = new ArrayList<>();
         if(tiles != null){
             String[] tilesArray = tiles.split(",");
             if(tilesArray != null && tilesArray.length > 0){
+                Log.d(TAG,"Tiles Length: "+tilesArray.length);
                 for(int i=0;i<tilesArray.length;i++) {
-                    boolean outFlag = context.getSharedPreferences(tilesArray[i]+"Settings",Context.MODE_APPEND).getBoolean("enabled",false);
-                    if(outFlag){
-                        out.add(tilesArray[i]);
+                    SharedPreferences sharedPrefs = context.getSharedPreferences(tilesArray[i] + "Settings", Context.MODE_APPEND);
+                    Log.d(TAG,"Shared Preferences: "+sharedPrefs);
+                    if(sharedPrefs != null) {
+                        boolean outFlag = sharedPrefs.getBoolean("enabled", false);
+                        Log.d(TAG,"Enabled: "+outFlag);
+                        if (outFlag) {
+                            Log.d(TAG, "Tile Activated: " + tilesArray[i]);
+                            out.add(tilesArray[i]);
+                        }
                     }
                 }
             }
         }
+        Log.d(TAG,"Completed to get the enabled tiles: "+out);
         return out;
     }
 
