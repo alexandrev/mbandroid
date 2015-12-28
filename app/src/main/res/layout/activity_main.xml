@@ -5,42 +5,6 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="92dp"
-        android:layout_weight="0.85">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Important Band Messages"
-            android:id="@+id/textView3"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textView3"
-            android:layout_alignParentStart="true">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView4"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@+id/textView3" />
-        </ScrollView>
-
-    </RelativeLayout>
-
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="98dp">
@@ -79,37 +43,59 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="66dp">
+        android:layout_height="100dp"
+        android:layout_weight="0.01">
 
         <Button
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/start"
-            android:layout_alignParentStart="true"
-            android:layout_above="@+id/textView" />
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Band Status: "
             android:id="@+id/textView"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="false"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="false"
             android:layout_alignParentLeft="false"
-            android:layout_toStartOf="@+id/textView2" />
+            android:layout_toStartOf="@+id/textView2"
+            android:layout_below="@+id/btnStart" />
+
+        <ImageView
+            android:src="@android:drawable/button_onoff_indicator_off"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Not Connected"
+            android:id="@+id/textView2"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/btnStart" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Firmware Version:"
+            android:id="@+id/textView5"
+            android:layout_weight="0.85"
+            android:layout_below="@+id/textView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Not Connected"
-            android:id="@+id/textView2"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/textView" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Unknown"
+            android:id="@+id/versionTextView"
+            android:layout_gravity="right"
+            android:layout_weight="0.85"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentRight="true" />
 
     </RelativeLayout>
 

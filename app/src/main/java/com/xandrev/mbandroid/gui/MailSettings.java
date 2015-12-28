@@ -60,7 +60,6 @@ public class MailSettings extends Activity {
                     Log.i(TAG,"Total of checked items: "+checkedItems.size());
                     for(int i=0;i<checkedItems.size();i++){
                         int idx = checkedItems.keyAt(i);
-                        Log.i(TAG, "Adding new value: "+lv.getItemAtPosition(idx));
                         if(checkedItems.get(idx)){
                             Log.i(TAG, "Added new value: "+lv.getItemAtPosition(idx));
                             newEnabledAppList.add((String)lv.getItemAtPosition(idx));

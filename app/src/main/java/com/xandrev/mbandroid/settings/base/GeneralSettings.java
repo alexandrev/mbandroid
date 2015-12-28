@@ -81,4 +81,13 @@ public class GeneralSettings {
         }
         return out;
     }
+
+    public String getLog() {
+        return shared.getString("log","");
+    }
+
+    public void addLog(String s) {
+        String currentLog = getLog();
+        shared.edit().putString("log",currentLog+s).apply();
+    }
 }

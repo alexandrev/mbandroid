@@ -21,16 +21,25 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
+import android.util.AndroidException;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.microsoft.band.ConnectionState;
 import com.xandrev.mbandroid.R;
+import com.xandrev.mbandroid.manager.LogViewer;
+import com.xandrev.mbandroid.settings.base.GeneralSettings;
 import com.xandrev.mbandroid.tiles.TilesManager;
 
 import java.text.SimpleDateFormat;
@@ -44,8 +53,45 @@ public class mBandroid extends Activity {
 	private TilesManager manager;
 	private final mBandroid act = this;
     private static final String TAG = "mBandroid";
-    private TextView statusView;
-    private TextView logView;
+    private ImageView statusView;
+    private TextView versionView;
+    private MenuItem logViewerButton;
+    private MenuItem settingsButton;
+    private LogViewer logViewer;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        new MenuInflater(this).inflate(R.menu.main,menu);
+
+        logViewerButton = (MenuItem) menu.findItem(R.id.action_logViewer);
+
+
+        if(logViewerButton != null) {
+            logViewerButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(mBandroid.this, LogViewerActivity.class);
+                    intent.putExtra("log",logViewer.getLog());
+                    startActivity(intent);
+                    return true;
+                }
+            });
+        }
+
+        settingsButton = (MenuItem) menu.findItem(R.id.action_settings);
+        if(settingsButton != null) {
+            settingsButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(mBandroid.this, SettingsActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,17 +100,16 @@ public class mBandroid extends Activity {
         manager = TilesManager.getInstance(this);
         manager.setActivity(this);
         btnStart = (Button) findViewById(R.id.btnStart);
-        statusView = (TextView) findViewById(R.id.textView2);
-        logView = (TextView) findViewById(R.id.textView4);
+        statusView = (ImageView) findViewById(R.id.textView2);
         btnNotifications = (ImageButton) findViewById(R.id.notificationsBtn);
         btnMail = (ImageButton) findViewById(R.id.emailBtn);
+        versionView = (TextView) findViewById(R.id.versionTextView);
+        logViewer = LogViewer.getInstance(this);
 
-
-        if(manager != null) {
+        if(manager.getBand() == null || !manager.getBand().isConnected()) {
             manager.activate();
             manager.start(act);
         }
-        updateBandStatus();
 
 
         btnNotifications.setOnClickListener(new OnClickListener() {
@@ -91,7 +136,6 @@ public class mBandroid extends Activity {
                 }else{
                     manager.stop();
                 }
-                updateBandStatus();
 
             }
         });
@@ -101,11 +145,7 @@ public class mBandroid extends Activity {
 	protected void onResume() {
         Log.d(TAG,"Starting onResume operation");
         super.onResume();
-        if(manager != null) {
-            manager.activate();
-            manager.start(act);
-        }
-        updateBandStatus();
+        updateBandStatus(null);
         Log.d(TAG,"onResume operation completed");
 	}
 	
@@ -122,39 +162,33 @@ public class mBandroid extends Activity {
         }
     }
 
-    public void addMessage(final String msg){
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "Starting run method to update the log viewer in the GUI");
-                String txt = logView.getText().toString();
-                if(msg != null){
-                    txt+="["+new SimpleDateFormat("HH:MM:ss").format(new Date())+"] - "+msg+"\n";
-                }
-                logView.setText(txt);
-                Log.d(TAG, "Completed run method to update the log viewer in the GUI");
-            }
-        });
-    }
 
-    public void updateBandStatus(){
+
+    public void updateBandStatus(final String state){
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG,"Starting run method to update the band state in the GUI");
                 manager = TilesManager.getInstance(mBandroid.this);
-                boolean connected = false;
+                boolean connected = false || ConnectionState.CONNECTED.toString().equals(state);
+                String version = "Unknown";
                 if(manager.getBand() != null) {
+                    Log.d(TAG,"Band is not null referenced");
                   connected = manager.getBand().isConnected();
+                    Log.d(TAG,"Connected: "+connected);
+                  version = manager.getBand().getVersion();
+                    Log.d(TAG,"Version: "+version);
                 }
+
                 Log.d(TAG,"Band is connected: "+connected);
                 if(connected){
-                    statusView.setText("Connected");
+                    statusView.setImageResource(android.R.drawable.button_onoff_indicator_on);
                     btnStart.setText("Stop");
+                    versionView.setText(version);
                 }
                 else{
-                    statusView.setText("Disconnected");
+                    statusView.setImageResource(android.R.drawable.button_onoff_indicator_off);
                     btnStart.setText("Start");
+                    versionView.setText(version);
                 }
                 Log.d(TAG,"Completed run method to update the band state in the GUI");
             }

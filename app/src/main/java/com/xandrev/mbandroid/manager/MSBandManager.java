@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.microsoft.band.BandClient;
 import com.microsoft.band.BandClientManager;
+import com.microsoft.band.BandConnectionCallback;
 import com.microsoft.band.BandException;
 import com.microsoft.band.BandIOException;
 import com.microsoft.band.BandInfo;
@@ -27,14 +28,16 @@ import java.util.UUID;
 /**
  * Created by alexa on 12/11/2015.
  */
-public class MSBandManager implements Parcelable {
+public class MSBandManager {
 
     private static final String TAG = "MSBandManager";
     private mBandroid mainActivity = null;
     private BandClient client = null;
     private static MSBandManager instance;
+    private LogViewer logViewer;
 
     public MSBandManager(mBandroid activity) {
+        logViewer = LogViewer.getInstance(activity);
         mainActivity = activity;
         Log.d(TAG,mainActivity.getLocalClassName());
         try {
@@ -45,22 +48,6 @@ public class MSBandManager implements Parcelable {
             e.printStackTrace();
         }
     }
-
-    protected MSBandManager(Parcel in) {
-
-    }
-
-    public static final Creator<MSBandManager> CREATOR = new Creator<MSBandManager>() {
-        @Override
-        public MSBandManager createFromParcel(Parcel in) {
-            return new MSBandManager(in);
-        }
-
-        @Override
-        public MSBandManager[] newArray(int size) {
-            return new MSBandManager[size];
-        }
-    };
 
     public static final MSBandManager getInstance(mBandroid activity){
         if(instance == null){
@@ -88,22 +75,36 @@ public class MSBandManager implements Parcelable {
         } else if (ConnectionState.CONNECTED == client.getConnectionState()) {
             return true;
         }
+        client.registerConnectionCallback(new BandConnectionCallback() {
+            @Override
+            public void onStateChanged(ConnectionState connectionState) {
+                Log.i(TAG,"Connection status change to: "+connectionState.toString());
+                logViewer.addMessage("Band connected: "+ connectionState.toString());
+                Log.i(TAG,"2 Connection status change to: "+connectionState.toString());
+                mainActivity.updateBandStatus(connectionState.toString());
+                Log.i(TAG,"3 Connection status change to: "+connectionState.toString());
+            }
+        });
         boolean out = ConnectionState.CONNECTED == client.connect().await();
-        mainActivity.addMessage("Band connected: "+out);
+
+
         return out;
     }
 
     public void disconnect(){
+        Log.d(TAG,"Starting the disconnecting operation");
         if (client != null) {
             try {
+                Log.d(TAG,"(client != null) Starting the disconnecting operation");
                 client.disconnect().await();
-                mainActivity.addMessage("Band disconected");
+                Log.d(TAG,"(client != null) Disconnecting operation completed");
             } catch (InterruptedException e) {
                 // Do nothing as this is happening during destroy
             } catch (BandException e) {
                 // Do nothing as this is happening during destroy
             }
         }
+        Log.d(TAG,"Disconnecting operation completed");
     }
 
     private BandTile createBandTile(CommonTile tile){
@@ -200,20 +201,27 @@ public class MSBandManager implements Parcelable {
             if(uid != null){
                 Log.i(TAG,"Size:  the page to the tile" + uid.getPageLayouts().size());
             }
-//            boolean result = client.getTileManager().removePages(msTile.getPage().getPageId()).await();
-    //        Log.i(TAG,"Removed the page from the tile: "+result);
             Log.i(TAG,"Adding the page to the tile");
-  //          result = client.getTileManager().setPages(msTile.getId(),msTile.getPage()).await();
-      //      Log.i(TAG,"Added the page to the tile: "+result);
             return true;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+    public String getVersion() {
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
+        Log.d(TAG,"Recovering the firmware version of the MS Band");
+        String out = "";
+        if(isConnected()) {
+            Log.d(TAG,"Retrieving band version as it is connected");
+            try {
+                String firmware = client.getFirmwareVersion().await();
+                String hardware = client.getHardwareVersion().await();
+                out += hardware + " / " + firmware;
+            } catch (BandException ex) {
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d(TAG,"Version value: "+out);
+        return out;
     }
 }

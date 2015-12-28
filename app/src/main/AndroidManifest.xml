@@ -34,6 +34,7 @@
         <service
             android:name=".notifications.NotificationManager"
             android:label="@string/app_name"
+            android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -41,8 +42,8 @@
         </service>
         <service
             android:name=".notifications.BandStatusService"
-            android:exported="true"
-            />
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name=".gui.NotificationSettings"
@@ -55,6 +56,22 @@
         <activity
             android:name=".gui.MailSettings"
             android:label="@string/title_activity_mail_settings"
+            android:parentActivityName=".gui.mBandroid">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xandrev.mbandroid.gui.mBandroid" />
+        </activity>
+        <activity
+            android:name=".gui.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".gui.mBandroid">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xandrev.mbandroid.gui.mBandroid" />
+        </activity>
+        <activity
+            android:name=".gui.LogViewerActivity"
+            android:label="@string/title_activity_log_viewer"
             android:parentActivityName=".gui.mBandroid">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

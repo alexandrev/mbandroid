@@ -101,10 +101,8 @@ public class MailSettings {
     public boolean isEnabledApplication(String value) {
         init();
         Log.d(TAG,"Recovered value:"+value);
-        String transformedValue = packageAppMap.get(value);
-        Log.d(TAG,"Transformed value: "+transformedValue);
         List list = getEnabledApps();
-        return list.contains(transformedValue);
+        return list.contains(value);
     }
 
     public boolean isEnabledPackage(String value) {
@@ -138,6 +136,6 @@ public class MailSettings {
     }
 
     public boolean getEnabledTile() {
-        return shared.getBoolean("enabled",true);
+        return shared.getBoolean("enabled",false);
     }
 }

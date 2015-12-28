@@ -90,6 +90,6 @@ public class NotificationSettings {
     }
 
     public boolean getEnabledTile() {
-        return shared.getBoolean("enabled",true);
+        return shared.getBoolean("enabled",false);
     }
 }

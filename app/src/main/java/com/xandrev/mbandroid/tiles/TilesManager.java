@@ -13,6 +13,7 @@ import com.microsoft.band.BandException;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
+import com.xandrev.mbandroid.manager.LogViewer;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.notifications.BandStatusService;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
@@ -40,6 +41,7 @@ public class TilesManager {
     private Context context;
     private boolean isRunning = false;
     private GeneralSettings settings;
+    private LogViewer logViewer;
 
     public static TilesManager getInstance(Context activity) {
         if(instance == null){
@@ -53,6 +55,7 @@ public class TilesManager {
     }
 
     public TilesManager(Context ctx){
+        logViewer = LogViewer.getInstance(ctx);
         tiles = new ArrayList<CommonTile>();
         internalTilesUUID = new ArrayList<>();
         this.context = ctx;
@@ -71,7 +74,7 @@ public class TilesManager {
             out = bandManager.addTile(tile);
             tiles.add(tile);
             Log.i(TAG,"Tile added to the logical list: "+tile.getName());
-            activity.addMessage("Tile added to the logical list: "+tile.getName());
+            logViewer.addMessage("Tile added to the logical list: "+tile.getName());
         }
         return out;
     }
@@ -173,7 +176,6 @@ public class TilesManager {
                 Log.i(TAG, e.getMessage());
             }
 
-            main.updateBandStatus();
             return null;
         }
     }
