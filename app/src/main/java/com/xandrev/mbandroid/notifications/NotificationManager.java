@@ -5,6 +5,8 @@ package com.xandrev.mbandroid.notifications;
  */
 
 
+import android.app.Notification;
+import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -19,33 +21,77 @@ public class NotificationManager extends NotificationListenerService {
     private TilesManager tilesManager;
     private static final String TAG = "NotificationManager";
 
+
     @Override
     public void onCreate() {
         super.onCreate();
-        tilesManager = TilesManager.getInstance(getBaseContext());
+        tilesManager = TilesManager.getInstance(this);
     }
-
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
 
-        Log.i(TAG, "New notification detected");
+
+        Log.d(TAG, "New notification detected");
         if (sbn != null) {
             String pack = sbn.getPackageName();
-            Log.i(TAG, "Notification source: " + pack);
-            List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
-            if (tileList != null) {
-                Log.i(TAG,"Tiles affected: "+tileList.size());
-                for (CommonTile tile : tileList) {
-                    tile.executeNotification(sbn);
+            Log.d(TAG, "Notification source: " + pack);
+            Log.d(TAG,"Key: "+sbn.getKey());
+
+            if(!isInternalNotification(sbn)) {
+                List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
+                if (tileList != null) {
+                    Log.d(TAG, "Tiles affected: " + tileList.size());
+                    for (CommonTile tile : tileList) {
+                        tile.executeNotification(sbn);
+                    }
+                }
+            }
+            else{
+                String tickerText = sbn.getNotification().tickerText.toString();
+                if(tickerText != null && !"".equals(tickerText)){
+                    if("cleaning_notifications".equals(tickerText)){
+                        clearAllNotifications(sbn.getNotification());
+                    }
+                }
+                cancelNotification(sbn.getKey());
+            }
+        }
+    }
+
+    private void clearAllNotifications(Notification notification) {
+        if(notification != null) {
+            Bundle extras = notification.extras;
+            if(extras.getCharSequence("android.text") != null) {
+                String text = extras.getCharSequence("android.text").toString();
+                Log.d(TAG,"Notification Keys: "+text);
+                String[] keys = text.split(",");
+
+                if(keys != null){
+                    for(String key: keys){
+                        Log.d(TAG,"Notification Key: "+key);
+                        cancelNotification(key);
+                    }
                 }
             }
         }
     }
 
+    private boolean isInternalNotification(StatusBarNotification sbn) {
+        boolean out = false;
+        if(sbn != null){
+            String packageName = sbn.getPackageName();
+            if(packageName != null && !"".equals(packageName)){
+                out = "com.xandrev.mbandroid".equals(packageName);
+            }
+        }
+        return out;
+
+    }
+
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        Log.i(TAG, "Notification Removed");
+        Log.d(TAG, "Notification Removed");
 
     }
 }

@@ -5,18 +5,27 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.microsoft.band.BandException;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.xandrev.mbandroid.gui.mBandroid;
+import com.xandrev.mbandroid.manager.LogViewer;
 import com.xandrev.mbandroid.manager.MSBandManager;
+import com.xandrev.mbandroid.notifications.BandStatusService;
+import com.xandrev.mbandroid.settings.base.GeneralSettings;
+import com.xandrev.mbandroid.settings.notifications.NotificationSettings;
+import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by alexa on 12/11/2015.
@@ -24,29 +33,48 @@ import java.util.UUID;
 public class TilesManager {
 
     private List<CommonTile> tiles;
+    private List<UUID> internalTilesUUID;
     private MSBandManager bandManager;
     private static final String TAG = "TilesManager";
     private static TilesManager instance;
+    private mBandroid activity;
     private Context context;
     private boolean isRunning = false;
+    private GeneralSettings settings;
+    private LogViewer logViewer;
 
-    public static TilesManager getInstance(Context context) {
+    public static TilesManager getInstance(Context activity) {
         if(instance == null){
-            instance = new TilesManager(context);
+            instance = new TilesManager(activity);
         }
         return instance;
     }
 
-    public TilesManager(Context context){
+    public void setActivity(mBandroid activity){
+        this.activity = activity;
+    }
+
+    public TilesManager(Context ctx){
+        logViewer = LogViewer.getInstance(ctx);
         tiles = new ArrayList<CommonTile>();
-        this.context = context;
+        internalTilesUUID = new ArrayList<>();
+        this.context = ctx;
+        settings = GeneralSettings.getInstance(ctx);
+        initTiles();
+    }
+
+    private void initTiles() {
+        MailTile.getInstance(this);
+        NotificationTile.getInstance(this);
     }
 
     private boolean addTile(CommonTile tile) throws Exception {
         boolean out = false;
-        if (tiles != null && !tiles.contains(tile)) {
+        if (tile != null && bandManager.getCommonTileFromUUID(tile.getId()) == null)  {
             out = bandManager.addTile(tile);
             tiles.add(tile);
+            Log.i(TAG,"Tile added to the logical list: "+tile.getName());
+            logViewer.addMessage("Tile added to the logical list: "+tile.getName());
         }
         return out;
     }
@@ -75,21 +103,28 @@ public class TilesManager {
         return bandManager;
     }
 
-    public void start(Activity main){
+    public void start(mBandroid main){
+
         new appTask(main).execute();
+
+    }
+
+    public void stop() {
+        bandManager.disconnect();
     }
 
     private class appTask extends AsyncTask<Void, Void, Void> {
 
-        private Activity main;
+        private mBandroid main;
 
-        public appTask(Activity main){
+        public appTask(mBandroid main){
             this.main = main;
         }
 
-        public void setActivity(Activity act){
+        public void setActivity(mBandroid act){
             this.main = act;
         }
+
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -100,10 +135,18 @@ public class TilesManager {
                 }
 
                 if(bandManager.isConnected()){
+                    Intent serviceIntent = new Intent(context,BandStatusService.class);
+                    EventBus.getDefault().postSticky(bandManager);
+                    serviceIntent.putExtra("command", "start");
+                    context.startService(serviceIntent);
                         Log.i(TAG, "Band is connected.\n");
                         List<CommonTile> tiles = getActivatedTiles();
-                        for (CommonTile tile : tiles) {
-                            addTile(tile);
+                        if(tiles != null) {
+                            Log.i(TAG,"Activated Tiles Size: "+tiles.size());
+                            for (CommonTile tile : tiles) {
+                                Log.i(TAG, "Common Tile Added: " + tile.getName());
+                                addTile(tile);
+                            }
                         }
                     } else {
                         Log.i(TAG, "Band isn't connected. Please make sure bluetooth is on and the band is in range.\n");
@@ -132,23 +175,45 @@ public class TilesManager {
             } catch (Exception e) {
                 Log.i(TAG, e.getMessage());
             }
+
             return null;
         }
     }
 
     private List<CommonTile> getActivatedTiles() {
         List<CommonTile> out = new ArrayList<CommonTile>();
-        out.add(new NotificationTile(this));
+        List<String> tilesEnabled = settings.getEnabledTiles();
+        if(tilesEnabled != null){
+            for(int i=0;i<tilesEnabled.size();i++) {
+                CommonTile tileObj = settings.getClassFromTile(this,tilesEnabled.get(i));
+                if(tileObj != null){
+                    out.add(tileObj);
+                }
+            }
+        }
         return out;
     }
 
 
-    public void activate(){
+    public void activate() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(TileEvent.ACTION_TILE_OPENED);
         filter.addAction(TileEvent.ACTION_TILE_BUTTON_PRESSED);
         filter.addAction(TileEvent.ACTION_TILE_CLOSED);
-        context.registerReceiver(messageReceiver, filter);
+        try {
+            context.registerReceiver(messageReceiver, filter);
+
+        }catch(IllegalArgumentException ex){
+
+        }
+    }
+
+    public void deactivate(){
+        try {
+            context.unregisterReceiver(messageReceiver);
+        }catch(IllegalArgumentException ex){
+
+        }
     }
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {

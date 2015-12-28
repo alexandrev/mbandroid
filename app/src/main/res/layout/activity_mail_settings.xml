@@ -7,15 +7,15 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.xandrev.mbandroid.gui.NotificationSettings">
+    tools:context="com.xandrev.mbandroid.gui.MailSettings">
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView"
+        android:layout_centerHorizontal="true"
         tools:listitem="@android:layout/simple_list_item_checked"
-        android:layout_above="@+id/btnCheckAll"
-        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/saveBtn"
         android:layout_below="@+id/checkBox" />
 
     <Button
@@ -27,14 +27,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/listView" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check All"
-        android:id="@+id/btnCheckAll"
-        android:layout_above="@+id/saveBtn"
-        android:layout_alignParentStart="true" />
-
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,14 +36,4 @@
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/listView"
         android:checked="false" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Uncheck All"
-        android:id="@+id/btnUncheckAll"
-        android:layout_below="@+id/listView"
-        android:layout_alignEnd="@+id/listView"
-        android:layout_above="@+id/saveBtn" />
-
 </RelativeLayout>
