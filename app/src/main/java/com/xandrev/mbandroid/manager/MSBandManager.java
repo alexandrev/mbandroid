@@ -1,8 +1,6 @@
 package com.xandrev.mbandroid.manager;
 
 import android.app.Activity;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.microsoft.band.BandClient;
@@ -14,13 +12,9 @@ import com.microsoft.band.BandInfo;
 import com.microsoft.band.ConnectionState;
 import com.microsoft.band.notifications.MessageFlags;
 import com.microsoft.band.tiles.BandTile;
-import com.microsoft.band.tiles.pages.PageData;
-import com.microsoft.band.tiles.pages.PageLayout;
 import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.tiles.CommonTile;
-import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +33,7 @@ public class MSBandManager {
     public MSBandManager(mBandroid activity) {
         logViewer = LogViewer.getInstance(activity);
         mainActivity = activity;
-        Log.d(TAG,mainActivity.getLocalClassName());
+        Log.d(TAG,"Activity: " + mainActivity.getLocalClassName());
         try {
             connect();
         } catch (InterruptedException e) {
@@ -50,9 +44,9 @@ public class MSBandManager {
     }
 
     public static final MSBandManager getInstance(mBandroid activity){
-        if(instance == null){
+        //if(instance == null){
             instance = new MSBandManager(activity);
-        }
+        //}
         return instance;
     }
 
@@ -65,13 +59,17 @@ public class MSBandManager {
     }
 
     public  boolean connect() throws InterruptedException, BandException {
+        Log.d(TAG,"Client devices detected: "+client);
         if (client == null) {
             BandInfo[] devices = BandClientManager.getInstance().getPairedBands();
-            if (devices.length == 0) {
+            Log.d(TAG,"Devices: "+devices);
+            Log.d(TAG,"Band devices detected: "+devices.length);
+            if (devices == null) {
                 return false;
             }
-            Log.i(TAG,"Main Activity: "+mainActivity);
             client = BandClientManager.getInstance().create(mainActivity.getApplicationContext(), devices[0]);
+            Log.d(TAG,"Client devices detected: "+client);
+            Log.d(TAG,"Client devices detected: "+client.getConnectionState().toString());
         } else if (ConnectionState.CONNECTED == client.getConnectionState()) {
             return true;
         }
@@ -86,7 +84,7 @@ public class MSBandManager {
             }
         });
         boolean out = ConnectionState.CONNECTED == client.connect().await();
-
+        Log.d(TAG,"Output of the connect method: "+out);
 
         return out;
     }

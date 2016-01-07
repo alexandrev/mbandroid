@@ -1,9 +1,6 @@
 package com.xandrev.mbandroid.gui;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -16,10 +13,7 @@ import android.widget.ListView;
 import com.xandrev.mbandroid.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class NotificationSettings extends Activity {
 

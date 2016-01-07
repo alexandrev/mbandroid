@@ -1,12 +1,8 @@
 package com.xandrev.mbandroid.manager;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.microsoft.band.BandClient;
-import com.microsoft.band.BandException;
-import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
 
 import java.text.SimpleDateFormat;

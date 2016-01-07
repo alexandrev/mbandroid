@@ -1,11 +1,9 @@
 package com.xandrev.mbandroid.tiles;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,7 +15,6 @@ import com.xandrev.mbandroid.manager.LogViewer;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.notifications.BandStatusService;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
-import com.xandrev.mbandroid.settings.notifications.NotificationSettings;
 import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
@@ -130,6 +127,7 @@ public class TilesManager {
         protected Void doInBackground(Void... params) {
             try {
                 bandManager = MSBandManager.getInstance(main);
+                Log.d(TAG,"Debug connected: "+bandManager.isConnected());
                 if(!bandManager.isConnected()) {
                     bandManager.connect();
                 }
