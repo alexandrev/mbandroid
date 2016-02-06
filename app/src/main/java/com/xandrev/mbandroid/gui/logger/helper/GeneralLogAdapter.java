@@ -61,8 +61,10 @@ public class GeneralLogAdapter extends BaseAdapter {
 
         String log = traces[position];
         String items[] = log.split("-");
-        holder.text.setText(items[1]);
-        holder.date.setText(items[0]);
+        if(items.length > 1) {
+            holder.text.setText(items[1]);
+            holder.date.setText(items[0]);
+        }
         holder.itemImage.setImageResource(android.R.drawable.ic_menu_preferences);
 
 

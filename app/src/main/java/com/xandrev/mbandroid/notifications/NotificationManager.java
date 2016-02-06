@@ -15,12 +15,14 @@ import com.xandrev.mbandroid.services.NotificationLogger;
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.TilesManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class NotificationManager extends NotificationListenerService {
 
     private NotificationLogger notificationLogger;
+    private List<String> dupId;
     private TilesManager tilesManager;
     private static final String TAG = "NotificationManager";
 
@@ -30,6 +32,7 @@ public class NotificationManager extends NotificationListenerService {
         super.onCreate();
         tilesManager = TilesManager.getInstance(this);
         notificationLogger = NotificationLogger.getInstance();
+        dupId = new ArrayList<>();
     }
 
     @Override
@@ -39,29 +42,31 @@ public class NotificationManager extends NotificationListenerService {
         Log.d(TAG, "New notification detected");
         if (sbn != null) {
 
-            String pack = sbn.getPackageName();
-            Log.d(TAG, "Notification source: " + pack);
-            Log.d(TAG,"Key: "+sbn.getKey());
-            Log.d(TAG,"Id: "+sbn.getId());
+            if(!dupId.contains(sbn.toString())) {
+                String pack = sbn.getPackageName();
+                Log.d(TAG, "Notification source: " + pack);
+                Log.d(TAG, "Key: " + sbn.getKey());
+                Log.d(TAG, "Id: " + sbn.getId());
+                dupId.add(sbn.toString());
 
-            if(!isInternalNotification(sbn)) {
-                List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
-                if (tileList != null) {
-                    Log.d(TAG, "Tiles affected: " + tileList.size());
-                    for (CommonTile tile : tileList) {
-                        tile.executeNotification(sbn);
-                        notificationLogger.addNotificationLog(tile,sbn);
+                if (!isInternalNotification(sbn)) {
+                    List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
+                    if (tileList != null) {
+                        Log.d(TAG, "Tiles affected: " + tileList.size());
+                        for (CommonTile tile : tileList) {
+                            tile.executeNotification(sbn);
+                            notificationLogger.addNotificationLog(tile, sbn);
+                        }
                     }
-                }
-            }
-            else{
-                String tickerText = sbn.getNotification().tickerText.toString();
-                if(tickerText != null && !"".equals(tickerText)){
-                    if("cleaning_notifications".equals(tickerText)){
-                        clearAllNotifications(sbn.getNotification());
+                } else {
+                    String tickerText = sbn.getNotification().tickerText.toString();
+                    if (tickerText != null && !"".equals(tickerText)) {
+                        if ("cleaning_notifications".equals(tickerText)) {
+                            clearAllNotifications(sbn.getNotification());
+                        }
                     }
+                    cancelNotification(sbn.getKey());
                 }
-                cancelNotification(sbn.getKey());
             }
         }
     }

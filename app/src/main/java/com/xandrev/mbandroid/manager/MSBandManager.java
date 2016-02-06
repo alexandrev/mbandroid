@@ -13,6 +13,7 @@ import com.microsoft.band.ConnectionState;
 import com.microsoft.band.notifications.MessageFlags;
 import com.microsoft.band.tiles.BandTile;
 import com.xandrev.mbandroid.gui.mBandroid;
+import com.xandrev.mbandroid.services.LogViewer;
 import com.xandrev.mbandroid.tiles.CommonTile;
 
 import java.util.Date;

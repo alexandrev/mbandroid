@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import com.microsoft.band.BandException;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
-import com.xandrev.mbandroid.manager.LogViewer;
+import com.xandrev.mbandroid.services.LogViewer;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.notifications.BandStatusService;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
@@ -20,7 +19,6 @@ import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

@@ -87,7 +87,7 @@ public class GeneralSettings {
 
     public void addLog(String s) {
         String currentLog = getLog();
-        setLog(currentLog+s);
+        setLog(s+currentLog);
     }
 
     public void setLog(String log) {

@@ -1,11 +1,10 @@
-package com.xandrev.mbandroid.manager;
+package com.xandrev.mbandroid.services;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -49,7 +48,7 @@ public class LogViewer {
 
     private void removeFirstLog() {
         String log = getLog();
-        int idx = log.indexOf("\n");
+        int idx = log.lastIndexOf("\n",log.length()-1);
         log = log.substring(0,idx+1);
         settings.setLog(log);
 
