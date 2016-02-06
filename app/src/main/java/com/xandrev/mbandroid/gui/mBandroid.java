@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.microsoft.band.ConnectionState;
 import com.xandrev.mbandroid.R;
+import com.xandrev.mbandroid.gui.logger.LogViewerActivity;
 import com.xandrev.mbandroid.manager.LogViewer;
 import com.xandrev.mbandroid.tiles.TilesManager;
 

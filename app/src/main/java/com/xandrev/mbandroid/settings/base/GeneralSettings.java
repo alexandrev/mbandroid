@@ -87,6 +87,10 @@ public class GeneralSettings {
 
     public void addLog(String s) {
         String currentLog = getLog();
-        shared.edit().putString("log",currentLog+s).apply();
+        setLog(currentLog+s);
+    }
+
+    public void setLog(String log) {
+        shared.edit().putString("log",log).apply();
     }
 }

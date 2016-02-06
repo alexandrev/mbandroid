@@ -11,6 +11,7 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.xandrev.mbandroid.services.NotificationLogger;
 import com.xandrev.mbandroid.tiles.CommonTile;
 import com.xandrev.mbandroid.tiles.TilesManager;
 
@@ -18,6 +19,8 @@ import java.util.List;
 
 
 public class NotificationManager extends NotificationListenerService {
+
+    private NotificationLogger notificationLogger;
     private TilesManager tilesManager;
     private static final String TAG = "NotificationManager";
 
@@ -26,6 +29,7 @@ public class NotificationManager extends NotificationListenerService {
     public void onCreate() {
         super.onCreate();
         tilesManager = TilesManager.getInstance(this);
+        notificationLogger = NotificationLogger.getInstance();
     }
 
     @Override
@@ -34,9 +38,11 @@ public class NotificationManager extends NotificationListenerService {
 
         Log.d(TAG, "New notification detected");
         if (sbn != null) {
+
             String pack = sbn.getPackageName();
             Log.d(TAG, "Notification source: " + pack);
             Log.d(TAG,"Key: "+sbn.getKey());
+            Log.d(TAG,"Id: "+sbn.getId());
 
             if(!isInternalNotification(sbn)) {
                 List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
@@ -44,6 +50,7 @@ public class NotificationManager extends NotificationListenerService {
                     Log.d(TAG, "Tiles affected: " + tileList.size());
                     for (CommonTile tile : tileList) {
                         tile.executeNotification(sbn);
+                        notificationLogger.addNotificationLog(tile,sbn);
                     }
                 }
             }

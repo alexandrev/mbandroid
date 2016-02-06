@@ -15,8 +15,10 @@ public class LogViewer {
 
     GeneralSettings settings;
 
+    private static final int MAX_SIZE_LOGS = 100;
     private static final String TAG = "LogViewer";
     private static LogViewer instance;
+
 
     public LogViewer(Context ctx) {
         settings = GeneralSettings.getInstance(ctx);
@@ -33,11 +35,28 @@ public class LogViewer {
         return settings.getLog();
     }
 
-    public void addMessage(final String msg){
+    public void addMessage(final String msg) {
         Log.d(TAG, "Starting run method to update the log viewer in the GUI");
-        if(msg != null){
-            settings.addLog("["+new SimpleDateFormat("HH:MM:ss").format(new Date())+"] - "+msg+"\n");
+        if (msg != null) {
+            int size = getSize();
+            if (size >= MAX_SIZE_LOGS) {
+                removeFirstLog();
+            }
+            settings.addLog(new Date().toString() + "-" + msg + "\n");
         }
         Log.d(TAG, "Completed run method to update the log viewer in the GUI");
+    }
+
+    private void removeFirstLog() {
+        String log = getLog();
+        int idx = log.indexOf("\n");
+        log = log.substring(0,idx+1);
+        settings.setLog(log);
+
+    }
+
+    public int getSize() {
+        String log = getLog();
+        return log.split("\n").length;
     }
 }

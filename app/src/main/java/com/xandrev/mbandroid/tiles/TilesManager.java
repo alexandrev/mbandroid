@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import com.microsoft.band.BandException;
@@ -19,6 +20,7 @@ import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ import de.greenrobot.event.EventBus;
  * Created by alexa on 12/11/2015.
  */
 public class TilesManager {
+
 
     private List<CommonTile> tiles;
     private List<UUID> internalTilesUUID;
@@ -109,6 +112,8 @@ public class TilesManager {
     public void stop() {
         bandManager.disconnect();
     }
+
+
 
     private class appTask extends AsyncTask<Void, Void, Void> {
 
