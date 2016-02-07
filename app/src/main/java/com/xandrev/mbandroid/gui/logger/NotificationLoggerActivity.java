@@ -2,6 +2,8 @@ package com.xandrev.mbandroid.gui.logger;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.xandrev.mbandroid.R;
@@ -11,6 +13,7 @@ import com.xandrev.mbandroid.services.NotificationLogger;
 public class NotificationLoggerActivity extends Activity {
 
     private NotificationLogger logger;
+    private Button cleanLogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,10 +22,23 @@ public class NotificationLoggerActivity extends Activity {
 
         logger = NotificationLogger.getInstance();
 
+        cleanLogs = (Button)findViewById(R.id.cleanNotificationLogs);
+        cleanLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logger.clean();
+                refreshLogViewer();
+            }
+
+
+        });
+
+    }
+
+    private void refreshLogViewer() {
         ListView tl=(ListView)findViewById(R.id.listView3);
         if(logger.getItems() != null) {
             tl.setAdapter(new NotificationLogAdapter(this, logger.getItems()));
         }
-
     }
 }

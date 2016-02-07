@@ -82,7 +82,7 @@ public class GeneralSettings {
     }
 
     public String getLog() {
-        return shared.getString("log","");
+        return shared.getString("log",null);
     }
 
     public void addLog(String s) {

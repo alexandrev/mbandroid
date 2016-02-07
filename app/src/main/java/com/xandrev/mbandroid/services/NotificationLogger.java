@@ -45,9 +45,9 @@ public class NotificationLogger {
         log.setPackage(sbn.getPackageName());
         log.setTitle(Util.getTitleFromNotification(sbn));
         if(notificationLog.size() > NOTIFICATION_LOGGER_MAX_SIZE){
-            notificationLog.remove(0);
+            notificationLog.remove(notificationLog.size()-1);
         }
-        notificationLog.add(log);
+        notificationLog.add(0,log);
         latestNotification = new Date();
     }
 
@@ -66,5 +66,9 @@ public class NotificationLogger {
 
     public List<NotificationLog> getItems() {
         return notificationLog;
+    }
+
+    public void clean() {
+        notificationLog.clear();
     }
 }
