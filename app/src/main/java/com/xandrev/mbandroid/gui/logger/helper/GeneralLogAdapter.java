@@ -27,12 +27,18 @@ public class GeneralLogAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return traces.length;
+        if(traces != null) {
+            return traces.length;
+        }
+        return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return traces[position];
+        if(traces != null) {
+            return traces[position];
+        }
+        return null;
     }
 
     @Override
@@ -59,13 +65,17 @@ public class GeneralLogAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String log = traces[position];
-        String items[] = log.split("-");
-        if(items.length > 1) {
-            holder.text.setText(items[1]);
-            holder.date.setText(items[0]);
+        if(traces != null) {
+            String log = traces[position];
+            if(log != null) {
+                String items[] = log.split("-");
+                if (items.length > 1) {
+                    holder.text.setText(items[1]);
+                    holder.date.setText(items[0]);
+                }
+                holder.itemImage.setImageResource(android.R.drawable.ic_menu_preferences);
+            }
         }
-        holder.itemImage.setImageResource(android.R.drawable.ic_menu_preferences);
 
 
         return convertView;

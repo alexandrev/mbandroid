@@ -56,6 +56,13 @@ public class LogViewer {
 
     public int getSize() {
         String log = getLog();
-        return log.split("\n").length;
+        if(log != null) {
+            return log.split("\n").length;
+        }
+        return 0;
+    }
+
+    public void clean() {
+        settings.setLog(null);
     }
 }

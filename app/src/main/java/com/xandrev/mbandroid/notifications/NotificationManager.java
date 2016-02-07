@@ -77,12 +77,14 @@ public class NotificationManager extends NotificationListenerService {
             if(extras.getCharSequence("android.text") != null) {
                 String text = extras.getCharSequence("android.text").toString();
                 Log.d(TAG,"Notification Keys: "+text);
-                String[] keys = text.split(",");
+                if(text != null) {
+                    String[] keys = text.split(",");
 
-                if(keys != null){
-                    for(String key: keys){
-                        Log.d(TAG,"Notification Key: "+key);
-                        cancelNotification(key);
+                    if (keys != null) {
+                        for (String key : keys) {
+                            Log.d(TAG, "Notification Key: " + key);
+                            cancelNotification(key);
+                        }
                     }
                 }
             }
