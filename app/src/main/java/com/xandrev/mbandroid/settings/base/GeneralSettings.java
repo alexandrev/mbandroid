@@ -11,7 +11,6 @@ import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by alexa on 25/12/2015.
@@ -88,6 +87,10 @@ public class GeneralSettings {
 
     public void addLog(String s) {
         String currentLog = getLog();
-        shared.edit().putString("log",currentLog+s).apply();
+        setLog(s+currentLog);
+    }
+
+    public void setLog(String log) {
+        shared.edit().putString("log",log).apply();
     }
 }

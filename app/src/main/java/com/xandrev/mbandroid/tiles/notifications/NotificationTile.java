@@ -3,10 +3,8 @@ package com.xandrev.mbandroid.tiles.notifications;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
@@ -21,7 +19,6 @@ import com.microsoft.band.tiles.pages.PageLayout;
 import com.microsoft.band.tiles.pages.TextButton;
 import com.microsoft.band.tiles.pages.TextButtonData;
 import com.xandrev.mbandroid.R;
-import com.xandrev.mbandroid.gui.mBandroid;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.settings.notifications.NotificationSettings;
 import com.xandrev.mbandroid.tiles.CommonTile;
@@ -29,7 +26,6 @@ import com.xandrev.mbandroid.tiles.TilesManager;
 import com.xandrev.mbandroid.utils.Util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

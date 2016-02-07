@@ -18,13 +18,8 @@
 package com.xandrev.mbandroid.gui;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
-import android.util.AndroidException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,12 +33,9 @@ import android.widget.TextView;
 
 import com.microsoft.band.ConnectionState;
 import com.xandrev.mbandroid.R;
-import com.xandrev.mbandroid.manager.LogViewer;
-import com.xandrev.mbandroid.settings.base.GeneralSettings;
+import com.xandrev.mbandroid.gui.logger.LogViewerActivity;
+import com.xandrev.mbandroid.services.LogViewer;
 import com.xandrev.mbandroid.tiles.TilesManager;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class mBandroid extends Activity {
 
@@ -62,10 +54,7 @@ public class mBandroid extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         new MenuInflater(this).inflate(R.menu.main,menu);
-
         logViewerButton = (MenuItem) menu.findItem(R.id.action_logViewer);
-
-
         if(logViewerButton != null) {
             logViewerButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override

@@ -75,5 +75,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="action_logViewer">Log</string>
-    <string name="title_activity_log_viewer">LogViewerActivity</string>
+    <string name="title_activity_log_viewer">Log Viewer</string>
 </resources>

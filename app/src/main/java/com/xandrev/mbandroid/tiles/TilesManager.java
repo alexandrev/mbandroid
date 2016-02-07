@@ -1,11 +1,9 @@
 package com.xandrev.mbandroid.tiles;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -13,11 +11,10 @@ import com.microsoft.band.BandException;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.xandrev.mbandroid.gui.mBandroid;
-import com.xandrev.mbandroid.manager.LogViewer;
+import com.xandrev.mbandroid.services.LogViewer;
 import com.xandrev.mbandroid.manager.MSBandManager;
 import com.xandrev.mbandroid.notifications.BandStatusService;
 import com.xandrev.mbandroid.settings.base.GeneralSettings;
-import com.xandrev.mbandroid.settings.notifications.NotificationSettings;
 import com.xandrev.mbandroid.tiles.mail.MailTile;
 import com.xandrev.mbandroid.tiles.notifications.NotificationTile;
 
@@ -31,6 +28,7 @@ import de.greenrobot.event.EventBus;
  * Created by alexa on 12/11/2015.
  */
 public class TilesManager {
+
 
     private List<CommonTile> tiles;
     private List<UUID> internalTilesUUID;
@@ -113,6 +111,8 @@ public class TilesManager {
         bandManager.disconnect();
     }
 
+
+
     private class appTask extends AsyncTask<Void, Void, Void> {
 
         private mBandroid main;
@@ -130,6 +130,7 @@ public class TilesManager {
         protected Void doInBackground(Void... params) {
             try {
                 bandManager = MSBandManager.getInstance(main);
+                Log.d(TAG,"Debug connected: "+bandManager.isConnected());
                 if(!bandManager.isConnected()) {
                     bandManager.connect();
                 }

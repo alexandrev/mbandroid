@@ -3,14 +3,11 @@ package com.xandrev.mbandroid.notifications;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.microsoft.band.BandException;
 import com.xandrev.mbandroid.manager.MSBandManager;
-
-import java.io.Serializable;
 
 import de.greenrobot.event.EventBus;
 
