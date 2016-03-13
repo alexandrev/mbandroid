@@ -22,7 +22,7 @@ import java.util.List;
 public class NotificationManager extends NotificationListenerService {
 
     private NotificationLogger notificationLogger;
-    private List<String> dupId;
+    private List<StatusBarNotification> dupId;
     private TilesManager tilesManager;
     private static final String TAG = "NotificationManager";
 
@@ -37,17 +37,15 @@ public class NotificationManager extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-
-
         Log.d(TAG, "New notification detected");
         if (sbn != null) {
 
-            if(!dupId.contains(sbn.toString())) {
+            if(!dupId.contains(sbn)) {
                 String pack = sbn.getPackageName();
                 Log.d(TAG, "Notification source: " + pack);
                 Log.d(TAG, "Key: " + sbn.getKey());
                 Log.d(TAG, "Id: " + sbn.getId());
-                dupId.add(sbn.toString());
+                dupId.add(sbn);
 
                 if (!isInternalNotification(sbn)) {
                     List<CommonTile> tileList = tilesManager.getTilesAffected(pack);
@@ -97,6 +95,10 @@ public class NotificationManager extends NotificationListenerService {
             String packageName = sbn.getPackageName();
             if(packageName != null && !"".equals(packageName)){
                 out = "com.xandrev.mbandroid".equals(packageName);
+                String tickerText = sbn.getNotification().tickerText.toString();
+                if (tickerText != null && !"".equals(tickerText)) {
+                    out = "cleaning_notifications".equals(tickerText) && out;
+                }
             }
         }
         return out;

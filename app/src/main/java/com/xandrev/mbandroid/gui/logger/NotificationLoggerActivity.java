@@ -21,7 +21,7 @@ public class NotificationLoggerActivity extends Activity {
         setContentView(R.layout.activity_notification_logger);
 
         logger = NotificationLogger.getInstance();
-
+        refreshLogViewer();
         cleanLogs = (Button)findViewById(R.id.cleanNotificationLogs);
         cleanLogs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +33,12 @@ public class NotificationLoggerActivity extends Activity {
 
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        refreshLogViewer();
+        super.onResume();
     }
 
     private void refreshLogViewer() {

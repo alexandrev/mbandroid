@@ -1,12 +1,14 @@
 package com.xandrev.mbandroid.notifications;
 
 
-import android.app.IntentService;
+import android.app.*;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.microsoft.band.BandException;
+import com.xandrev.mbandroid.R;
 import com.xandrev.mbandroid.manager.MSBandManager;
 
 import de.greenrobot.event.EventBus;
@@ -34,9 +36,10 @@ public class BandStatusService  extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i(TAG,"Starting onHandleIntent");
+        Log.i(TAG, "Starting onHandleIntent");
         Toast.makeText(this, "Band Status Service started", Toast.LENGTH_SHORT).show();
         client = EventBus.getDefault().getStickyEvent(MSBandManager.class);
+        boolean currentStatus = false;
         if(intent != null) {
             Log.i(TAG,"Client object: "+client);
 
@@ -49,6 +52,7 @@ public class BandStatusService  extends IntentService {
                 flagExist = false;
             }
 
+            int notificationId = 1;
             while(!flagExist){
                 if (client != null) {
                     try {
@@ -57,6 +61,13 @@ public class BandStatusService  extends IntentService {
                             client.connect();
                             Toast.makeText(this, "Reconnecting the Microsoft Band", Toast.LENGTH_SHORT).show();
                         }
+                        if(currentStatus && !client.isConnected()){
+                            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(client.getMainActivity()).setTicker("mbandroid: Connection Status").setContentText("MS Band is disconected!").setSmallIcon(R.drawable.ic_launcher);
+                            android.app.NotificationManager mNotifyMgr = (android.app.NotificationManager) client.getMainActivity().getSystemService(client.getMainActivity().NOTIFICATION_SERVICE);
+                            mNotifyMgr.notify(notificationId, mBuilder.build());
+                            notificationId++;
+                        }
+                        currentStatus = client.isConnected();
                         Thread.sleep(60000);
                     }catch(InterruptedException e){
                         e.printStackTrace();

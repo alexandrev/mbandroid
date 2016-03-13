@@ -40,7 +40,7 @@ public class MailSettings {
 
     private void initMailClients() {
         //TODO Complete with another mail clients
-        String[] mailClients = new String[]{"Gmail","Outlook"};
+        String[] mailClients = new String[]{"Gmail","Outlook","Inbox","AquaMail","Mailbox","MailWise","K-9 Mail","CloudMagic","TypeApp","myMail"};
         String init = "";
         if(mailClients != null){
             for(String mail : mailClients){
