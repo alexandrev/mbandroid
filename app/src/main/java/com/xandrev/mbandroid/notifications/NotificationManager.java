@@ -37,8 +37,6 @@ public class NotificationManager extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-
-
         Log.d(TAG, "New notification detected");
         if (sbn != null) {
 
@@ -97,6 +95,10 @@ public class NotificationManager extends NotificationListenerService {
             String packageName = sbn.getPackageName();
             if(packageName != null && !"".equals(packageName)){
                 out = "com.xandrev.mbandroid".equals(packageName);
+                String tickerText = sbn.getNotification().tickerText.toString();
+                if (tickerText != null && !"".equals(tickerText)) {
+                    out = "cleaning_notifications".equals(tickerText) && out;
+                }
             }
         }
         return out;

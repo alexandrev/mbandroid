@@ -53,7 +53,7 @@ public class MSBandManager {
 
     public void sendMessage(CommonTile tile,String title,String message) {
         try {
-            client.getNotificationManager().sendMessage(tile.getId(), title, message, new Date(), MessageFlags.SHOW_DIALOG);
+            client.getNotificationManager().sendMessage(tile.getId(), title, message, new Date(), MessageFlags.NONE);
         } catch (BandIOException e) {
             e.printStackTrace();
         }
